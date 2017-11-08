@@ -1,15 +1,8 @@
-/**
- * Create Image. 
- * 
- * The createImage() function provides a fresh buffer of pixels to play with.
- * This example creates an image gradient.
- */
-
 //bg
 PImage img;
 
 //distance between dots on grid
-final int spacing = 64;
+final int spacing = 16;
 
 //press shift to draw lines
 boolean lining = false;
@@ -19,6 +12,109 @@ Node prevNode = null;
 
 //2D array of nodes
 Node nodes[][];
+
+void setup() {
+  size(1800, 900);
+  background(0);
+  ellipseMode(CENTER);  // Set ellipseMode to CENTER
+  fill(0, 153, 204);
+  stroke(0, 153, 204);
+  nodes = new Node[height/spacing][width/spacing];
+
+  img = createImage(width, height, RGB);
+  for (int i = 0; i < img.pixels.length; i++) {  
+    img.pixels[i] = color(0, 0, 0, 255);
+  }
+
+  int row;
+  int col;
+
+  for (int i = 0; i < img.pixels.length; i++) {
+    row = i / width;
+    col = i % width; 
+
+    if ((row - (spacing/2)) % spacing == 0) {
+      if ((col  - (spacing/2))% spacing == 0) {
+        img.pixels[i] = color(0, 153, 204);
+        nodes[(int)row/spacing][(int)col/spacing] = new Node(i);
+      }
+    }
+  }
+}
+
+void draw() {
+  background(img);
+  for (int i = 0; i < nodes.length; i++) {
+    for (Node n : nodes[i]) {
+      if (n.highlighted) {
+        ellipse(n.x, n.y, 10, 10);
+      }
+      if (!n.getOut().isEmpty()) {
+        for (Node d : n.getOut()) {
+          line(n.x, n.y, d.x, d.y);
+        }
+      }
+    }
+  }
+}
+
+void mousePressed() {
+  int row = constrain(mouseY,0,spacing*(nodes.length)-1)/spacing;
+  int col = constrain(mouseX,0,spacing*(nodes[0].length)-1)/spacing;
+  Node n = nodes[row][col];
+  if (lining) {
+    if (prevNode != null) {
+      //connect nodes
+      prevNode.connectTo(n);
+    }
+    prevNode = n;
+  } else if (mouseButton == RIGHT) {
+    n.wipe();
+  } else {
+    //highligh them
+    int result = n.highlight();
+    if (result == 1) {
+      println("row:" + row + " col:" + col);
+    } else {
+      println("row:" + row + " col:" + col);
+    }
+  }
+}
+
+void keyPressed() {
+
+  //switch to line drawing mode
+  if (key == CODED && keyCode == SHIFT) {
+    if (!lining) {
+      lining = true;
+    }
+    //clear all lines and highlighted nodes
+  } else if (key == 'k') {
+    for (int i = 0; i < nodes.length; i++) {
+      for (Node n : nodes[i]) {
+        n.wipe();
+        n.highlighted = false;
+      }
+    }
+    //clear all highlights
+  } else if (key == 'm') {
+    for (int i = 0; i < nodes.length; i++) {
+      for (Node n : nodes[i]) {
+        n.highlighted = false;
+      }
+    }
+  }
+}
+void keyReleased() {
+  //Exit line drawing mode
+  if (key == CODED && keyCode == SHIFT) {
+    if (lining) {
+      lining = false;
+      prevNode = null;
+    }
+  }
+}
+
 
 public class Node {
   private ArrayList<Node> out;
@@ -99,104 +195,5 @@ public class Node {
       n.getOut().remove(this);
     }
     this.in.clear();
-  }
-}
-
-void setup() {
-  size(1024, 768);
-  background(0);
-  nodes = new Node[height/spacing][width/spacing];
-
-  img = createImage(width, height, RGB);
-  for (int i = 0; i < img.pixels.length; i++) {  
-    img.pixels[i] = color(0, 0, 0, 255);
-  }
-
-  int row;
-  int col;
-
-  for (int i = 0; i < img.pixels.length; i++) {
-    row = i / width;
-    col = i % width; 
-
-    if ((row - (spacing/2)) % spacing == 0) {
-      if ((col  - (spacing/2))% spacing == 0) {
-        img.pixels[i] = color(0, 153, 204);
-        //print((int)row/spacing);
-        //print(" ");
-        //println((int)col/spacing);
-        nodes[(int)row/spacing][(int)col/spacing] = new Node(i);
-      }
-    }
-  }
-  //image(img, 0, 0);
-  ellipseMode(CENTER);  // Set ellipseMode to CENTER
-  fill(0, 153, 204);
-  stroke(0, 153, 204);
-}
-
-void draw() {
-  background(img);
-  for (int i = 0; i < nodes.length; i++) {
-    for (Node n : nodes[i]) {
-      if (n.highlighted) {
-        ellipse(n.x, n.y, 10, 10);
-      }
-      if (!n.getOut().isEmpty()) {
-        for (Node d : n.getOut()) {
-          line(n.x, n.y, d.x, d.y);
-        }
-      }
-    }
-  }
-}
-
-void mousePressed() {
-  int row = mouseY/spacing;
-  int col = mouseX/spacing;
-  Node n = nodes[row][col];
-  if (lining) {
-    if (prevNode != null) {
-      //connect nodes
-      prevNode.connectTo(n);
-    }
-    prevNode = n;
-  } else if (mouseButton == RIGHT) {
-    n.wipe();
-  } else {
-    //highligh them
-    int result = n.highlight();
-    if (result == 1) {
-      println("row:" + row + " col:" + col);
-    } else {
-      println("row:" + row + " col:" + col);
-    }
-  }
-}
-
-void keyPressed() {
-  
-  //switch to line drawing mode
-  if (key == CODED && keyCode == SHIFT) {
-    if (!lining) {
-      lining = true;
-    }
-  //clear all lines and highlighted nodes
-  } else if (key == 'k') {
-    for (int i = 0; i < nodes.length; i++) {
-      for (Node n : nodes[i]) {
-        n.wipe();
-        n.highlighted = false;
-      }
-    }
-  }
-}
-void keyReleased() {
-  //Exit line drawing mode
-  if (key == CODED && keyCode == SHIFT) {
-    if (lining) {
-      lining = false;
-      prevNode = null;
-    }
   }
 }
