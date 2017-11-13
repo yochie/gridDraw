@@ -27,11 +27,12 @@ Grid grid;
 
 void setup() {
   size(1800, 900);
+
   //Create background img
   background(0);
   fill(0, 153, 204);
   stroke(0, 153, 204);
-  img = createImage(this.pixelWidth, this.pixelHeight, RGB);
+  img = createImage(width, height, RGB);
 
   //fill img with black
   for (int i = 0; i < img.pixels.length; i++) {  
@@ -39,14 +40,14 @@ void setup() {
   }
 
   //send as bg image for grid
-  grid = new Grid(height, width, spacing, img);
+  grid = new Grid(height, width, spacing, img, this);
 
   //set ellipsmode for draw
   ellipseMode(CENTER);  // Set ellipseMode to CENTER
 }
 
 void draw() {
-
+  background(grid.bg);
   grid.updateDrawing();
 }
 
@@ -120,55 +121,7 @@ void keyPressed() {
   }    
   //Save grid.getNodes() to serialized file
   else if (key == 's') {
-    try { 
-      File saveDir = new File("saves");
-
-      // if the directory does not exist, create it
-      if (!saveDir.exists()) {
-        System.out.println("creating directory: " + saveDir.getName());
-        boolean result = false;
-        try {
-          saveDir.mkdir();
-          result = true;
-        } 
-        catch(SecurityException se) {
-          //handle it
-          se.toString();
-        }        
-        if (result) {    
-          System.out.println("DIR created");
-        }
-      }
-
-
-      JFrame frame = new JFrame("FileChooser");
-
-      JFileChooser chooser = new JFileChooser(saveDir.getName());
-
-      chooser.setSelectedFile(new File("drawing.save"));
-      FileNameExtensionFilter filter = new FileNameExtensionFilter(
-        "Saves", "save");
-      chooser.setFileFilter(filter);
-      int returnVal = chooser.showSaveDialog(frame);
-      String fname;
-      if (returnVal == JFileChooser.APPROVE_OPTION) {
-        File f = chooser.getSelectedFile();
-        fname = f.getPath();
-        println("Saving to this file: " + fname);
-        if (fname != null) {
-          FileOutputStream fos = new FileOutputStream(fname);
-          ObjectOutputStream oos = new ObjectOutputStream(fos);
-
-          oos.writeObject(grid.getNodes());
-          oos.close();
-          fos.close();
-        }
-      }
-    }
-    catch (Exception ex)
-    {
-      print("Exception thrown during test: " + ex.toString());
-    }
+    grid.saveToFile();
   } 
   //open saved file
   else if (key == 'o') {
@@ -187,8 +140,9 @@ void keyPressed() {
         println("Opening file : " + fname);
         if (fname != null) {
           FileInputStream fis = new FileInputStream(fname);
-          ObjectInputStream ois = new ObjectInputStream(fis);
-          grid.setNodes((Node[][]) ois.readObject());
+          ObjectInputStream ois = new ObjectInputStream(fis);     
+          grid = (Grid) ois.readObject();
+          grid.attach(this, img);
           ois.close();
           fis.close();
         }
