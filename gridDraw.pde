@@ -4,17 +4,13 @@ import javax.swing.filechooser.*;
 
 import java.io.*;
 
-
-//bg
-PImage img;
-
 //distance between dots on grid
 final int spacing = 32;
 
-//press shift to draw lines
+//Line drawing mode active?
 boolean lining = false;
 
-//variable used to confirm drawing clearing using "k" key
+//Used to confirm drawing clearing using "k" key
 boolean confirming = false;
 
 //Used to stop drawing while waiting for event
@@ -23,6 +19,8 @@ String waitingFor = "";
 
 //previously highlighted node
 Node prevNode = null;
+
+//Main grid object
 Grid grid;
 
 void setup() {
@@ -34,7 +32,7 @@ void setup() {
   stroke(0, 153, 204);
 
   //send as bg image for grid
-  grid = new Grid(height, width, spacing, img, this);
+  grid = new Grid(height, width, spacing, this);
 
   //set ellipsmode for draw
   ellipseMode(CENTER);  // Set ellipseMode to CENTER
@@ -144,7 +142,7 @@ void keyPressed() {
           FileInputStream fis = new FileInputStream(fname);
           ObjectInputStream ois = new ObjectInputStream(fis);     
           grid = (Grid) ois.readObject();
-          grid.attach(this, img);
+          grid.attach(this);
           ois.close();
           fis.close();
         }

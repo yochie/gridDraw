@@ -21,7 +21,7 @@ public class Grid implements Serializable {
 
   private transient PApplet parent;
 
-  public Grid(int pHeight, int pWidth, int spacing, PImage bg, PApplet parent) {
+  public Grid(int pHeight, int pWidth, int spacing, PApplet parent) {
 
     this.parent = parent;
     this.pHeight = pHeight;
@@ -145,7 +145,7 @@ public class Grid implements Serializable {
     }
   }
 
-  public void attach(PApplet parent, PImage bg) {
+  public void attach(PApplet parent) {
     this.parent = parent;
     this.createBg();
   }
@@ -166,7 +166,7 @@ public class Grid implements Serializable {
     }
     //if current drawing doesn't fit in requested size
     int occupied[] = this.occupiedRange();
-    if (occupied[0] > this.pHeight/newSpacing || occupied[1] > this.pWidth/newSpacing) {
+    if (occupied[0] > this.pHeight/newSpacing - 1 || occupied[1] > this.pWidth/newSpacing - 1) {
       parent.println("Can't resize page, missing place for current drawing.");
       return;
     }
@@ -174,6 +174,7 @@ public class Grid implements Serializable {
 
     this.nodeHeight = this.pHeight/this.spacing;
     this.nodeWidth = this.pWidth/this.spacing;
+    parent.println("new grid size: rows: " + this.nodeHeight + " cols: " + this.nodeWidth);
 
     this.createBg();
     this.createNodes(this.nodes);
@@ -194,17 +195,18 @@ public class Grid implements Serializable {
     }
     this.nodeHeight = this.pHeight/this.spacing;
     this.nodeWidth = this.pWidth/this.spacing;
+    parent.println("new grid size: rows: " + this.nodeHeight + " cols: " + this.nodeWidth);
 
     this.createBg();
 
     this.createNodes(this.nodes);
   }
 
-  public int[] occupiedRange() {
+  private int[] occupiedRange() {
     int maxI = 0;
     int maxJ = 0;
   outerloop:
-    for (int i = this.nodeHeight-1; i >= 0; i--) {
+    for (int i = this.nodeHeight-1; i > 0; i--) {
       for (Node n : nodes[i]) {
         if (!n.getOut().isEmpty() || !n.getIn().isEmpty() || n.highlighted) {
           maxI = i;
@@ -215,7 +217,7 @@ public class Grid implements Serializable {
 
   outerloop2:
 
-    for (int j = this.nodeWidth-1; j >= 0; j--) {
+    for (int j = this.nodeWidth-1; j > 0; j--) {
       for (int i = 0; i < this.nodeHeight; i++) {
         Node n = nodes[i][j];
         if (!n.getOut().isEmpty() || !n.getIn().isEmpty() || n.highlighted) {
@@ -229,7 +231,7 @@ public class Grid implements Serializable {
     return toreturn;
   }
 
-  void createNodes() {
+  private void createNodes() {
     this.nodes = new Node[this.nodeHeight][this.nodeWidth];
 
     //fill nodes array with fresh nodes
@@ -247,7 +249,7 @@ public class Grid implements Serializable {
     }
   }
 
-  void createNodes(Node[][] old) {
+  private void createNodes(Node[][] old) {
 
     Node[][] newNodes = new Node[this.nodeHeight][this.nodeWidth];
 
@@ -266,7 +268,7 @@ public class Grid implements Serializable {
     this.nodes = newNodes;
   }
 
-  public void createBg() {
+  private void createBg() {
     PImage img = parent.createImage(this.pWidth, this.pHeight, parent.RGB);
 
     //fill img with black
