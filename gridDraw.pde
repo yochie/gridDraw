@@ -47,8 +47,8 @@ void draw() {
 
 void mousePressed() {
   if (!pause) {
-    int row = constrain(mouseY, 0, (grid.spacing*grid.nodeHeight)-1)/spacing;
-    int col = constrain(mouseX, 0, (grid.spacing*grid.nodeWidth)-1)/spacing;
+    int row = constrain(mouseY, 0, (grid.spacing*grid.nodeHeight)-1)/grid.spacing;
+    int col = constrain(mouseX, 0, (grid.spacing*grid.nodeWidth)-1)/grid.spacing;
     Node n = grid.getNodes()[row][col];
     if (lining) {
       if (prevNode != null) {
@@ -85,7 +85,7 @@ void keyPressed() {
   //reset all global mode variables to their defaults
   else if (key == ESC) {
     key = 0;
-    if (confirming || lining) {
+    if (confirming || lining || pause) {
       println("Going back to default mode");    
       confirming = false;
       pause = false;
@@ -119,7 +119,7 @@ void keyPressed() {
   } 
    //Augment spacing
     else if (key == '=') {
-    //grid.grow();
+    grid.grow();
   } 
   //Save grid.getNodes() to serialized file
   else if (key == 's') {

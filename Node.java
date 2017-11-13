@@ -5,12 +5,10 @@ public class Node implements Serializable {
   private ArrayList<Node> out;
   private ArrayList<Node> in;
   public boolean visited;
-  public int centerP;
   public int x;
   public int y;
   public boolean highlighted;
-  private int gridWidth;
-
+  
   //constructor
   public Node(int i, int w) {
     this.in = new ArrayList<Node>();
@@ -18,13 +16,16 @@ public class Node implements Serializable {
     this.visited = false;
     this.highlighted = false;
     
-    this.centerP = i;
-    this.gridWidth = w;
-    this.y = this.centerP / gridWidth; //row is y...
-    this.x = this.centerP % gridWidth; //column is x...
-    
-    System.out.println(i + " " + x + " " + y);
-    
+    this.y = i / w; //row is y...
+    this.x = i % w; //column is x...    
+  }
+  
+    //constructor
+  public Node() {
+    this.in = new ArrayList<Node>();
+    this.out = new ArrayList<Node>();
+    this.visited = false;
+    this.highlighted = false;
   }
 
   public int highlight() {
@@ -37,10 +38,9 @@ public class Node implements Serializable {
     }
   }
 
-  public void reposition(int newCenter) {
-    this.centerP = newCenter;
-    this.y = centerP / this.gridWidth; //row is y...
-    this.x = centerP % this.gridWidth; //column is x...
+  public void reposition(int x, int y) {
+    this.y = y; //centerP / this.gridWidth; //row is y...
+    this.x = x; //centerP % this.gridWidth; //column is x...
   }
 
   public void connectTo(Node toAdd) {

@@ -150,29 +150,120 @@ public class Grid implements Serializable {
     this.createBg();
   }
 
-  //public int setSpacing(int newSpacing) {
-  //  if (newSpacing < 4) {
-  //    return 1;
-  //  }
-  //  this.spacing = newSpacing;
+  public void grow() {
 
-  //  int sizes[] = this.createBg();
+    int newSpacing;
+    //if already at max spacing, skip
+    if (this.spacing >= 128) { 
+      return;
+    }
+    //otherwise augment spacing to a max of 128
+    else if (this.spacing <= 124)
+      newSpacing = this.spacing + 4 ;
+    else {
+      newSpacing = 128;
+    }
+    //if current drawing doesn't fit in requested size
+    int occupied[] = this.occupiedRange();
+    parent.println(occupied);
+    if (occupied[0] > this.pHeight/newSpacing || occupied[1] > this.pWidth/newSpacing) {
+      parent.println("Can't resize page, missing place for current drawing.");
+      return;
+    }
+    this.spacing = newSpacing;
 
-  //  //create nodes spaced by this.spacing pixels
-  //  int row;
-  //  int col;
-  //  for (int i = 0; i < this.bg.pixels.length; i++) {
-  //    //get pixel coordinates in matrix form
-  //    row = i / this.pWidth;
-  //    col = i % this.pWidth; 
+    this.nodeHeight = this.pHeight/this.spacing;
+    this.nodeWidth = this.pWidth/this.spacing;
 
-  //    if ((row - (this.spacing/2)) % this.spacing == 0) {
-  //      if ((col  - (this.spacing/2))% this.spacing == 0) {
-  //        this.nodes[(int)row/this.spacing][(int)col/this.spacing] = new Node(i, this.pWidth);
-  //      }
-  //    }
-  //  }
-  //}
+    this.createBg();
+    this.createNodes(this.nodes);
+  }
+
+  public void shrink() {    
+    //if already at min spacing, skip
+    if (this.spacing <= 4) { 
+      return;
+    }
+
+    //otherwise reduce spacing to a min of 4
+    else if (this.spacing >= 8)
+      this.spacing = this.spacing - 4;
+    else {
+      this.spacing = 4;
+    }
+    this.nodeHeight = this.pHeight/this.spacing;
+    this.nodeWidth = this.pWidth/this.spacing;
+
+    this.createBg();
+
+    this.createNodes(this.nodes);
+  }
+
+  public int[] occupiedRange() {
+    int maxI = 0;
+    int maxJ = 0;
+  outerloop:
+    for (int i = this.nodeHeight-1; i >= 0; i--) {
+      for (Node n : nodes[i]) {
+        if (!n.getOut().isEmpty() || !n.getIn().isEmpty() || n.highlighted) {
+          maxI = i;
+          break outerloop;
+        }
+      }
+    }
+
+  outerloop2:
+
+    for (int j = this.nodeWidth-1; j >= 0; j--) {
+      for (int i = 0; i < this.nodeHeight; i++) {
+        Node n = nodes[i][j];
+        if (!n.getOut().isEmpty() || !n.getIn().isEmpty() || n.highlighted) {
+          maxJ = j;
+          break outerloop2;
+        }
+      }
+    }
+
+    int[] toreturn = {maxI, maxJ};
+    return toreturn;
+  }
+
+  void createNodes() {
+    this.nodes = new Node[this.nodeHeight][this.nodeWidth];
+
+    //fill nodes array with fresh nodes
+    int row;
+    int col;
+    for (int i = 0; i < this.bg.pixels.length; i++) {
+      //get pixel coordinates in matrix form
+      row = i / this.pWidth;
+      col = i % this.pWidth; 
+      if ((row - (this.spacing/2)) % this.spacing == 0) {
+        if ((col  - (this.spacing/2))% this.spacing == 0) {
+          this.nodes[row / this.spacing][col / this.spacing] = new Node(i, this.pWidth);
+        }
+      }
+    }
+  }
+
+  void createNodes(Node[][] old) {
+
+    Node[][] newNodes = new Node[this.nodeHeight][this.nodeWidth];
+
+    //fill nodes array with fresh nodes
+    for (int i = 0; i < this.nodeHeight; i++) {
+      for (int j = 0; j < this.nodeWidth; j++) {
+        if (i < old.length && j < old[0].length) {
+          newNodes[i][j] = old[i][j];
+          newNodes[i][j].reposition(j * spacing + spacing/2, i * spacing + spacing/2);
+        } else {
+          newNodes[i][j] = new Node();
+          newNodes[i][j].reposition(j * spacing + spacing/2, i * spacing + spacing/2);
+        }
+      }
+    }
+    this.nodes = newNodes;
+  }
 
   public void createBg() {
     PImage img = parent.createImage(this.pWidth, this.pHeight, parent.RGB);
@@ -199,61 +290,4 @@ public class Grid implements Serializable {
     }
     this.bg = img;
   }
-
-  public void shrink() {
-
-    //if already at min spacing, skip
-    if (this.spacing <= 4) { 
-      return;
-    }
-
-    //otherwise reduce spacing to a min of 4
-    else if (this.spacing >= 8)
-      this.spacing = this.spacing - 4;
-    else {
-      this.spacing = 4;
-    }
-    this.nodeHeight = this.pHeight/this.spacing;
-    this.nodeWidth = this.pWidth/this.spacing;
-
-    this.createBg();
-    this.createNodes();
-  }
-
-  void createNodes() {
-    this.nodes = new Node[this.nodeHeight][this.nodeWidth];
-    
-    //fill nodes array with fresh nodes
-    int row;
-    int col;
-    for (int i = 0; i < this.bg.pixels.length; i++) {
-      //get pixel coordinates in matrix form
-      row = i / this.pWidth;
-      col = i % this.pWidth; 
-      if ((row - (this.spacing/2)) % this.spacing == 0) {
-        if ((col  - (this.spacing/2))% this.spacing == 0) {
-          this.nodes[row / this.spacing][col / this.spacing] = new Node(i, this.pWidth);
-        }
-      }
-    }
-  }
-
-      void createNodes(Node[][] old) {
-
-        Node[][] newNodes = new Node[this.nodeHeight][this.nodeWidth];
-
-        //fill nodes array with fresh nodes
-        for (int i = 0; i < this.nodeHeight; i++) {
-          for (int j = 0; j < this.nodeWidth; j++) {
-            if (old.length < i && old[0].length < j) {
-              newNodes[i][j] = old[i][j];
-             // newNodes[i][j].reposition(i*spacing*this.pWidth);
-              
-            } else {
-              newNodes[i][j] = new Node((i * this.pWidth * spacing) + (j*spacing), this.pWidth);
-            }
-          }
-        }
-        this.nodes = newNodes;
-      }
-    }
+}
