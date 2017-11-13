@@ -32,12 +32,6 @@ void setup() {
   background(0);
   fill(0, 153, 204);
   stroke(0, 153, 204);
-  img = createImage(width, height, RGB);
-
-  //fill img with black
-  for (int i = 0; i < img.pixels.length; i++) {  
-    img.pixels[i] = color(0, 0, 0, 255);
-  }
 
   //send as bg image for grid
   grid = new Grid(height, width, spacing, img, this);
@@ -118,7 +112,15 @@ void keyPressed() {
   //clear all highlights
   else if (key == 'm') {
     grid.wipeHighlights();
-  }    
+  } 
+  //Reduce spacing
+    else if (key == '-') {
+    grid.shrink();
+  } 
+   //Augment spacing
+    else if (key == '=') {
+    //grid.grow();
+  } 
   //Save grid.getNodes() to serialized file
   else if (key == 's') {
     grid.saveToFile();
