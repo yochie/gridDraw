@@ -16,11 +16,13 @@ public class Node implements Serializable {
     this.in = new ArrayList<Node>();
     this.out = new ArrayList<Node>();
     this.visited = false;
+    this.highlighted = false;
+    
     this.centerP = i;
     this.gridWidth = w;
     this.y = centerP / gridWidth; //row is y...
     this.x = centerP % gridWidth; //column is x...
-    this.highlighted = false;
+    
   }
 
   public int highlight() {

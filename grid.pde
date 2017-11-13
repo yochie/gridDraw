@@ -9,7 +9,7 @@ import java.io.*;
 PImage img;
 
 //distance between dots on grid
-final int spacing = 16;
+final int spacing = 32;
 
 //press shift to draw lines
 boolean lining = false;
@@ -23,76 +23,53 @@ String waitingFor = "";
 
 //previously highlighted node
 Node prevNode = null;
-
-//2D array of nodes
-Node nodes[][];
+Grid grid;
 
 void setup() {
   size(1800, 900);
+  //Create background img
   background(0);
-  ellipseMode(CENTER);  // Set ellipseMode to CENTER
   fill(0, 153, 204);
   stroke(0, 153, 204);
-  nodes = new Node[height/spacing][width/spacing];
+  img = createImage(this.pixelWidth, this.pixelHeight, RGB);
 
-  img = createImage(width, height, RGB);
+  //fill img with black
   for (int i = 0; i < img.pixels.length; i++) {  
     img.pixels[i] = color(0, 0, 0, 255);
   }
 
-  int row;
-  int col;
+  //send as bg image for grid
+  grid = new Grid(height, width, spacing, img);
 
-  for (int i = 0; i < img.pixels.length; i++) {
-    row = i / width;
-    col = i % width; 
-
-    if ((row - (spacing/2)) % spacing == 0) {
-      if ((col  - (spacing/2))% spacing == 0) {
-        img.pixels[i] = color(0, 153, 204);
-        nodes[(int)row/spacing][(int)col/spacing] = new Node(i, width);
-      }
-    }
-  }
+  //set ellipsmode for draw
+  ellipseMode(CENTER);  // Set ellipseMode to CENTER
 }
 
 void draw() {
-  background(img);
 
-  for (int i = 0; i < nodes.length; i++) {
-    for (Node n : nodes[i]) {
-      if (n.highlighted) {
-        ellipse(n.x, n.y, 10, 10);
-      }
-      if (!n.getOut().isEmpty()) {
-        for (Node d : n.getOut()) {
-          line(n.x, n.y, d.x, d.y);
-        }
-      }
-    }
-  }
+  grid.updateDrawing();
 }
 
 void mousePressed() {
   if (!pause) {
-    int row = constrain(mouseY, 0, spacing*(nodes.length)-1)/spacing;
-    int col = constrain(mouseX, 0, spacing*(nodes[0].length)-1)/spacing;
-    Node n = nodes[row][col];
+    int row = constrain(mouseY, 0, (grid.spacing*grid.nodeHeight)-1)/spacing;
+    int col = constrain(mouseX, 0, (grid.spacing*grid.nodeWidth)-1)/spacing;
+    Node n = grid.getNodes()[row][col];
     if (lining) {
       if (prevNode != null) {
-        //connect nodes
-        prevNode.connectTo(n);
+        //connect grid.getNodes()
+        grid.connect(prevNode, n);
       }
       prevNode = n;
     } else if (mouseButton == RIGHT) {
-      n.wipe();
+      grid.wipe(row, col);
     } else {
-      //highligh them
-      int result = n.highlight();
+      //highlight them
+      int result = grid.highlight(row, col);
       if (result == 1) {
-        println("row:" + row + " col:" + col);
+        println("+row:" + row + " col:" + col);
       } else {
-        println("row:" + row + " col:" + col);
+        println("-row:" + row + " col:" + col);
       }
     }
   } else {
@@ -108,9 +85,10 @@ void keyPressed() {
       if (!lining) {
         lining = true;
       }
-      //reset all global mode variables to their defaults
     }
-  } else if (key == ESC) {
+  } 
+  //reset all global mode variables to their defaults
+  else if (key == ESC) {
     key = 0;
     if (confirming || lining) {
       println("Going back to default mode");    
@@ -119,16 +97,12 @@ void keyPressed() {
       waitingFor = "";
       lining = false;
     }
-
-    //clear all lines and highlighted nodes
-  } else if (key == 'k') {
+  } 
+  //clear all lines and highlighted grid.getNodes()
+  else if (key == 'k') {
     if (confirming) {
-      for (int i = 0; i < nodes.length; i++) {
-        for (Node n : nodes[i]) {
-          n.wipe();
-          n.highlighted = false;
-        }
-      }
+      grid.wipe();
+      //Unpause and reset status trackers
       confirming = false;
       pause = false;
       waitingFor = "";
@@ -139,16 +113,13 @@ void keyPressed() {
       waitingFor = "Deletion confirmation.";
       confirming = true;
     }
-    //clear all highlights
-  } else if (key == 'm') {
-    for (int i = 0; i < nodes.length; i++) {
-      for (Node n : nodes[i]) {
-        n.highlighted = false;
-      }
-    }
-
-    //Save nodes to serialized file
-  } else if (key == 's') {
+  }
+  //clear all highlights
+  else if (key == 'm') {
+    grid.wipeHighlights();
+  }    
+  //Save grid.getNodes() to serialized file
+  else if (key == 's') {
     try { 
       File saveDir = new File("saves");
 
@@ -188,7 +159,7 @@ void keyPressed() {
           FileOutputStream fos = new FileOutputStream(fname);
           ObjectOutputStream oos = new ObjectOutputStream(fos);
 
-          oos.writeObject(nodes);
+          oos.writeObject(grid.getNodes());
           oos.close();
           fos.close();
         }
@@ -198,10 +169,11 @@ void keyPressed() {
     {
       print("Exception thrown during test: " + ex.toString());
     }
-  } else if (key == 'o') {
+  } 
+  //open saved file
+  else if (key == 'o') {
     try {
       File saveDir = new File("saves");
-
       JFrame frame = new JFrame("FileChooser");
       JFileChooser chooser = new JFileChooser(saveDir.getName());
       FileNameExtensionFilter filter = new FileNameExtensionFilter(
@@ -216,7 +188,7 @@ void keyPressed() {
         if (fname != null) {
           FileInputStream fis = new FileInputStream(fname);
           ObjectInputStream ois = new ObjectInputStream(fis);
-          nodes = (Node[][]) ois.readObject();
+          grid.setNodes((Node[][]) ois.readObject());
           ois.close();
           fis.close();
         }
@@ -224,7 +196,7 @@ void keyPressed() {
     }
     catch (Exception ex)
     {
-      print("Exception thrown during test: " + ex.toString());
+      print("Error reading file: " + ex.toString());
     }
   }
 }
