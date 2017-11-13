@@ -44,25 +44,45 @@ public class Grid implements Serializable {
   }
 
   //wipe all nodes
-  public void wipe() {
+  public boolean wipe() {
     for (int i = 0; i < this.nodes.length; i++) {
       for (Node n : this.nodes[i]) {
         n.wipe();
         n.highlighted = false;
       }
     }
+    return true;
   }
 
   //wipe specific node
-  public void wipe(int row, int col) {
-    this.nodes[row][col].wipe();
-    this.nodes[row][col].highlighted = false;
+  public boolean wipe(Node n) {
+    boolean success = n.wipe();
+    boolean success2 = n.highlight(false);
+    return (success || success2);
   }
 
   //switch highlight mode of a specific node
-  public int highlight (int row, int col) {
-    return nodes[row][col].highlight();
+  public boolean highlight (int row, int col, boolean val) {
+    boolean success = nodes[row][col].highlight(val);
+    System.out.println("row:" + row + " col:" + col + " " + val);
+
+    return success;
   }
+    
+  //clear highlights
+  public boolean wipeHighlights() {
+    boolean success = false;
+    for (int i = 0; i < nodes.length; i++) {
+      for (Node n : nodes[i]) {
+        if (n.highlighted){
+          success = true;
+          n.highlight(false);
+        }
+      }
+    }
+    return success;
+  }
+
 
   //draw node connections and highlights
   public void updateDrawing() {
@@ -81,16 +101,60 @@ public class Grid implements Serializable {
   }
 
   //connect nodes
-  public void connect(Node n1, Node n2) {
-    n1.connectTo(n2);
+  public boolean connect(Node from, Node to) {
+    boolean success;
+
+    if (from != to) {
+      if (!from.getOut().contains(to) && !from.getIn().contains(to)) {
+        //sanity check
+        if (to.getIn().contains(from) || to.getOut().contains(from)) {
+          System.out.println("Woops, links aren't properly mirrored. There is a bug in the code.");
+          success = false;
+          return success;
+        }
+        //connect both nodes to eachother (directed)
+        from.getOut().add(to);
+        to.getIn().add(from);
+        success = true;
+        return success;
+      } else {
+        System.out.println("redundant edge, ignoring");
+        success = false;
+        return success;
+      }
+    } else {
+      System.out.println("no self loops plz");
+      success = false;
+      return success;
+    }
   }
 
-  //clear highlights
-  public void wipeHighlights() {
-    for (int i = 0; i < nodes.length; i++) {
-      for (Node n : nodes[i]) {
-        n.highlighted = false;
+  //disconnect nodes (only if right edge direction)
+  public boolean disconnect(Node from, Node to) {
+    boolean success;
+
+    if (from != to) {
+      if (from.getOut().contains(to) && to.getIn().contains(from)) {
+
+        from.getOut().remove(to);
+        to.getIn().remove(from);
+        success = true;
+        return success;
+      } else {
+
+        //sanity check
+        if (from.getOut().contains(to) || to.getIn().contains(from)) {
+          System.out.println("Woops, links aren't properly mirrored. There is a bug in the code.");
+        } else {
+          System.out.println("Edge does not exist.");
+        }
+        success = false;
+        return success;
       }
+    } else {
+      System.out.println("Cannot disconnect node from itself.");
+      success = false;
+      return success;
     }
   }
 
@@ -150,13 +214,13 @@ public class Grid implements Serializable {
     this.createBg();
   }
 
-  public void grow() {
+  public boolean grow() {
 
     int newSpacing;
     //if already at max spacing, skip
     if (this.spacing >= 128) {
       parent.println("Maximum size reached.");
-      return;
+      return false;
     }
     //otherwise augment spacing to a max of 128
     else if (this.spacing <= 124)
@@ -168,7 +232,7 @@ public class Grid implements Serializable {
     int occupied[] = this.occupiedRange();
     if (occupied[0] > this.pHeight/newSpacing - 1 || occupied[1] > this.pWidth/newSpacing - 1) {
       parent.println("Can't resize page, missing place for current drawing.");
-      return;
+      return false;
     }
     this.spacing = newSpacing;
 
@@ -178,13 +242,14 @@ public class Grid implements Serializable {
 
     this.createBg();
     this.createNodes(this.nodes);
+    return true;
   }
 
-  public void shrink() {    
+  public boolean shrink() {    
     //if already at min spacing, skip
     if (this.spacing <= 4) { 
       parent.println("Minimum size reached.");
-      return;
+      return false;
     }
 
     //otherwise reduce spacing to a min of 4
@@ -200,6 +265,7 @@ public class Grid implements Serializable {
     this.createBg();
 
     this.createNodes(this.nodes);
+    return true;
   }
 
   private int[] occupiedRange() {
@@ -287,8 +353,8 @@ public class Grid implements Serializable {
 
       if ((row - (this.spacing/2)) % this.spacing == 0 ) {
         if ((col  - (this.spacing/2))% this.spacing == 0) {
-          if(row < this.nodeHeight * this.spacing && col < this.nodeWidth * this.spacing)
-          img.pixels[i] = parent.color(0, 153, 204);
+          if (row < this.nodeHeight * this.spacing && col < this.nodeWidth * this.spacing)
+            img.pixels[i] = parent.color(0, 153, 204);
         }
       }
     }

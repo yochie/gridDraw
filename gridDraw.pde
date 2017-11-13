@@ -22,6 +22,7 @@ Node prevNode = null;
 
 //Main grid object
 Grid grid;
+Executer executer;
 
 void setup() {
   size(1800, 900);
@@ -33,6 +34,7 @@ void setup() {
 
   //send as bg image for grid
   grid = new Grid(height, width, spacing, this);
+  executer = new Executer();
 
   //set ellipsmode for draw
   ellipseMode(CENTER);  // Set ellipseMode to CENTER
@@ -48,21 +50,29 @@ void mousePressed() {
     int row = constrain(mouseY, 0, (grid.spacing*grid.nodeHeight)-1)/grid.spacing;
     int col = constrain(mouseX, 0, (grid.spacing*grid.nodeWidth)-1)/grid.spacing;
     Node n = grid.getNodes()[row][col];
+    
+    //Drawing lines
     if (lining) {
       if (prevNode != null) {
         //connect grid.getNodes()
-        grid.connect(prevNode, n);
+        Command c = new ConnectCommand(prevNode, n, grid);
+        executer.run(c);
       }
       prevNode = n;
-    } else if (mouseButton == RIGHT) {
-      grid.wipe(row, col);
-    } else {
-      //highlight them
-      int result = grid.highlight(row, col);
-      if (result == 1) {
-        println("+row:" + row + " col:" + col);
+    }
+    //Clearing node
+    else if (mouseButton == RIGHT) {
+      Command c = new WipeNodeCommand(n, grid);
+      executer.run(c);
+    }
+    //Highlighting
+    else {
+      if (grid.nodes[row][col].highlighted) {
+        Command c = new HighlightCommand(row, col, false, grid);
+        executer.run(c);
       } else {
-        println("-row:" + row + " col:" + col);
+        Command c = new HighlightCommand(row, col, true, grid);
+        executer.run(c);
       }
     }
   } else {
@@ -91,17 +101,19 @@ void keyPressed() {
       lining = false;
     }
   } 
-  //clear all lines and highlighted grid.getNodes()
+  //clear all lines and highlights
   else if (key == 'k') {
     if (confirming) {
-      grid.wipe();
+      Command c = new WipeCommand(grid);
+      executer.run(c);
+      executer.reset();
       //Unpause and reset status trackers
       confirming = false;
       pause = false;
       waitingFor = "";
       println("Deleted.");
     } else { 
-      println("Delete everything? Press k again for yes, or press ESC for no.");
+      println("Delete everything? Press k again for yes, or press ESC for no. This action is irreversible.");
       pause = true;
       waitingFor = "Deletion confirmation.";
       confirming = true;
@@ -109,15 +121,27 @@ void keyPressed() {
   }
   //clear all highlights
   else if (key == 'm') {
-    grid.wipeHighlights();
+    Command c = new WipeHighlightsCommand(grid);
+    executer.run(c);
   } 
   //Reduce spacing
-    else if (key == '-') {
-    grid.shrink();
+  else if (key == '-') {
+    Command c = new ShrinkCommand(grid);
+    executer.run(c);
   } 
-   //Augment spacing
-    else if (key == '=') {
-    grid.grow();
+  //Augment spacing
+  else if (key == '=') {
+    Command c = new GrowCommand(grid);
+    executer.run(c);
+  }
+  //Undo 
+  else if (key == 'u') {
+    executer.undo();
+    delay(20);
+  } 
+  //Redo
+  else if (key == 'r') {
+    executer.redo();
   } 
   //Save grid.getNodes() to serialized file
   else if (key == 's') {
@@ -147,6 +171,7 @@ void keyPressed() {
           fis.close();
         }
       }
+      executer.reset();
     }
     catch (Exception ex)
     {
