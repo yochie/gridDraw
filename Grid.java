@@ -154,7 +154,8 @@ public class Grid implements Serializable {
 
     int newSpacing;
     //if already at max spacing, skip
-    if (this.spacing >= 128) { 
+    if (this.spacing >= 128) {
+      parent.println("Maximum size reached.");
       return;
     }
     //otherwise augment spacing to a max of 128
@@ -165,7 +166,6 @@ public class Grid implements Serializable {
     }
     //if current drawing doesn't fit in requested size
     int occupied[] = this.occupiedRange();
-    parent.println(occupied);
     if (occupied[0] > this.pHeight/newSpacing || occupied[1] > this.pWidth/newSpacing) {
       parent.println("Can't resize page, missing place for current drawing.");
       return;
@@ -182,6 +182,7 @@ public class Grid implements Serializable {
   public void shrink() {    
     //if already at min spacing, skip
     if (this.spacing <= 4) { 
+      parent.println("Minimum size reached.");
       return;
     }
 
@@ -282,8 +283,9 @@ public class Grid implements Serializable {
       row = i / this.pWidth;
       col = i % this.pWidth; 
 
-      if ((row - (this.spacing/2)) % this.spacing == 0) {
+      if ((row - (this.spacing/2)) % this.spacing == 0 ) {
         if ((col  - (this.spacing/2))% this.spacing == 0) {
+          if(row < this.nodeHeight * this.spacing && col < this.nodeWidth * this.spacing)
           img.pixels[i] = parent.color(0, 153, 204);
         }
       }
