@@ -24,21 +24,40 @@ public class WipeNodeCommand implements Command {
   }
 
   public boolean execute() {
+    //System.out.println(this.node + " " + this.node.getOut() + " " + this.node.getIn());
     boolean success = grid.wipe(this.node);
+    if (!success) {
+      System.out.println("Node wipe failed : No edges to wipe from node. Normal during mass wipe.");
+    }
+
     return success;
   }
 
+
   public boolean undo() {
-    boolean success = false;
+    boolean success = true;
+    //reset highlight
     this.node.highlight(this.highlighted);
-    for (Node n: outgoing){
-       success = this.grid.connect(this.node, n);
-       if (!success){return success;}
+
+    //reset out
+    for (Node n : outgoing) {
+      success = this.grid.connect(this.node, n);
+      if (!success) {
+        System.out.println("Warning: Failed to reestablish connection. This is normal when undoing 'k' clearing.");
+      }
     }
-    for (Node n: incoming){
+
+    //vreset in
+    for (Node n : incoming) {
       success = this.grid.connect(n, this.node);
-      if (!success){return success;}
+      if (!success) {
+        System.out.println("Warning: Failed to reestablish connection. This is normal when undoing 'k' clearing.");
+      }
     }
-    return success;
+
+    //Because the wipe() functionnality is difficult to reverse when performed in batch, we expect SOME undos to fail when doing them in batch.
+    //This only occurs when attempting to connect already connected nodes and does not represent an actual problem with the data,
+    //only a redundancy in the operations being performed. In case other problems occur, log printing messages have been included.
+    return true;
   }
 }

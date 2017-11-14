@@ -16,7 +16,7 @@ public class Executer {
       executed.push(c);
       undone.clear();
     } else {
-      System.out.println("Useless or failing command.");
+      System.out.println(c.getClass().getName() + " failed.");
     }
   }
 

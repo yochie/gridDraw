@@ -56,7 +56,6 @@ public class Node implements Serializable {
   public boolean wipe() {
     boolean success;
     if(this.out.isEmpty() && this.in.isEmpty()){
-      System.out.println("Nothing to wipe from node.");
       success = false;
       return success;
     }
@@ -69,7 +68,7 @@ public class Node implements Serializable {
     }
     this.in.clear();
     
-    System.out.println("cleared node " + this.x + " " + this.y);
+    //System.out.println("cleared node " + this.x + " " + this.y);
     success = true;
     return success;
   }

@@ -112,7 +112,7 @@ void keyPressed() {
       waitingFor = "";
       println("Deleted.");
     } else { 
-      println("Delete everything? Press k again for yes, or press ESC for no. This action is irreversible.");
+      println("Delete everything? Press k again for yes, or press ESC for no.");
       pause = true;
       waitingFor = "Deletion confirmation.";
       confirming = true;

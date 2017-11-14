@@ -58,6 +58,8 @@ public class Grid implements Serializable {
   public boolean wipe(Node n) {
     boolean success = n.wipe();
     boolean success2 = n.highlight(false);
+    
+    //we consider operation a success if we managed to clear anything
     return (success || success2);
   }
 
@@ -68,13 +70,13 @@ public class Grid implements Serializable {
 
     return success;
   }
-    
+
   //clear highlights
   public boolean wipeHighlights() {
     boolean success = false;
     for (int i = 0; i < nodes.length; i++) {
       for (Node n : nodes[i]) {
-        if (n.highlighted){
+        if (n.highlighted) {
           success = true;
           n.highlight(false);
         }
@@ -103,12 +105,12 @@ public class Grid implements Serializable {
   //connect nodes
   public boolean connect(Node from, Node to) {
     boolean success;
-
+    System.out.println("Connecting : " + from + " to " + to);
     if (from != to) {
       if (!from.getOut().contains(to) && !from.getIn().contains(to)) {
         //sanity check
         if (to.getIn().contains(from) || to.getOut().contains(from)) {
-          System.out.println("Woops, links aren't properly mirrored. There is a bug in the code.");
+          System.out.println("Woops, links aren't properly mirrored. Please report bug...");
           success = false;
           return success;
         }
@@ -118,12 +120,12 @@ public class Grid implements Serializable {
         success = true;
         return success;
       } else {
-        System.out.println("redundant edge, ignoring");
+        System.out.println("Redundant edge, ignoring");
         success = false;
         return success;
       }
     } else {
-      System.out.println("no self loops plz");
+      System.out.println("Self loop, ignoring.");
       success = false;
       return success;
     }
