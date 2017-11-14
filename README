@@ -1,6 +1,6 @@
 Commands:
 
-	left click			highlights node and prints its coordinate
+	left click			highlight node and print its coordinate
 
 	right click			delete all edges connected to node (and remove highlight)
 
