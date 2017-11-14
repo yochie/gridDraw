@@ -1,0 +1,25 @@
+Commands:
+
+	left click			highlights node and prints its coordinate
+
+	right click			delete all edges connected to node (and remove highlight)
+
+	shift(hold) + left click	draw lines between nodes
+
+	k (twice to confirm)		delete everything; pressing once freezes screen until
+					confirmed (with "k" again) or cancelled (with ESC)
+
+	m				delete highlights
+
+	u				undo
+
+	r				redo
+
+	ESC				exit other modes (cancels deletion, "unstick" shift, ...)
+
+	-				zoom out
+
+	=				zoom in (if current drawing will still fit)
+
+
+
