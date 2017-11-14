@@ -68,6 +68,8 @@ public class Node implements Serializable {
       n.getOut().remove(this);
     }
     this.in.clear();
+    
+    System.out.println("cleared node " + this.x + " " + this.y);
     success = true;
     return success;
   }

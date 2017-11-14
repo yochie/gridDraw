@@ -1,16 +1,20 @@
-public class WipeCommand implements Command {
+import java.util.ArrayList;
+
+public class WipeCommand extends CompoundCommand {
   private Grid grid;
 
   public WipeCommand(Grid g) {
+    super();
     this.grid = g;
-  }
-
-  public boolean execute() {
-    boolean success = this.grid.wipe();
-    return success;
-  }
-
-  public boolean undo() {
-    return false;
+    this.commands = new ArrayList<Command>();
+    for (int i = 0; i < this.grid.getNodes().length; i++) {
+      for (Node n : this.grid.getNodes()[i]) {
+        //System.out.println(n.x + " " + n.y);
+        if ((!n.getOut().isEmpty()) || ( !n.getIn().isEmpty()) || n.highlighted) {
+          System.out.println("adding command to compound");
+          this.commands.add(new WipeNodeCommand(n, this.grid));
+        }
+      }
+    }
   }
 }

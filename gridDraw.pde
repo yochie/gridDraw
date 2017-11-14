@@ -106,7 +106,6 @@ void keyPressed() {
     if (confirming) {
       Command c = new WipeCommand(grid);
       executer.run(c);
-      executer.reset();
       //Unpause and reset status trackers
       confirming = false;
       pause = false;
@@ -143,7 +142,7 @@ void keyPressed() {
   else if (key == 'r') {
     executer.redo();
   } 
-  //Save grid.getNodes() to serialized file
+  //Save grid to serialized file
   else if (key == 's') {
     grid.saveToFile();
   } 

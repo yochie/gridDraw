@@ -6,10 +6,12 @@ public class WipeNodeCommand implements Command {
   Grid grid;
   ArrayList<Node> outgoing;
   ArrayList<Node> incoming;
+  boolean highlighted;
 
   public WipeNodeCommand(Node n, Grid g) {
     this.grid = g;
     this.node = n;
+    this.highlighted = n.highlighted;
     this.outgoing = new ArrayList<Node>();
     this.incoming = new ArrayList<Node>();
 
@@ -28,15 +30,15 @@ public class WipeNodeCommand implements Command {
 
   public boolean undo() {
     boolean success = false;
+    this.node.highlight(this.highlighted);
     for (Node n: outgoing){
-       success = this.grid.connect(node, n);
+       success = this.grid.connect(this.node, n);
        if (!success){return success;}
     }
     for (Node n: incoming){
-      success = this.grid.connect(n, node);
+      success = this.grid.connect(n, this.node);
       if (!success){return success;}
     }
-      
     return success;
   }
 }

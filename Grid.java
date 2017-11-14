@@ -141,7 +141,6 @@ public class Grid implements Serializable {
         success = true;
         return success;
       } else {
-
         //sanity check
         if (from.getOut().contains(to) || to.getIn().contains(from)) {
           System.out.println("Woops, links aren't properly mirrored. There is a bug in the code.");
