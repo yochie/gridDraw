@@ -58,7 +58,7 @@ public class Grid implements Serializable {
   public boolean wipe(Node n) {
     boolean success = n.wipe();
     boolean success2 = n.highlight(false);
-    
+
     //we consider operation a success if we managed to clear anything
     return (success || success2);
   }
@@ -310,7 +310,12 @@ public class Grid implements Serializable {
       col = i % this.pWidth; 
       if ((row - (this.spacing/2)) % this.spacing == 0) {
         if ((col  - (this.spacing/2))% this.spacing == 0) {
-          this.nodes[row / this.spacing][col / this.spacing] = new Node(i, this.pWidth);
+          //filter out nodes that wouldnt have full spot
+          if (row < this.nodeHeight * this.spacing && col < this.nodeWidth * this.spacing) {
+            Node toAdd = new Node();
+            toAdd.reposition(col, row);
+            this.nodes[parent.constrain(row / this.spacing, 0, this.nodeHeight-1)][parent.constrain(col / this.spacing, 0, this.nodeWidth-1)] = toAdd;
+          }
         }
       }
     }
@@ -354,11 +359,12 @@ public class Grid implements Serializable {
 
       if ((row - (this.spacing/2)) % this.spacing == 0 ) {
         if ((col  - (this.spacing/2))% this.spacing == 0) {
-          if (row < this.nodeHeight * this.spacing && col < this.nodeWidth * this.spacing)
+          if (row < this.nodeHeight * this.spacing && col < this.nodeWidth * this.spacing) {
             img.pixels[i] = parent.color(0, 153, 204);
+          }
         }
       }
+      this.bg = img;
     }
-    this.bg = img;
   }
 }

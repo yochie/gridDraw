@@ -25,7 +25,7 @@ Grid grid;
 Executer executer;
 
 void setup() {
-  size(1800, 900);
+  size(700, 900);
 
   //Create background img
   background(0);
@@ -47,10 +47,10 @@ void draw() {
 
 void mousePressed() {
   if (!pause) {
-    int row = constrain(mouseY, 0, (grid.spacing*grid.nodeHeight)-1)/grid.spacing;
-    int col = constrain(mouseX, 0, (grid.spacing*grid.nodeWidth)-1)/grid.spacing;
+    int row = constrain(mouseY/grid.spacing, 0, grid.nodeHeight-1);
+    int col = constrain(mouseX/grid.spacing, 0, grid.nodeWidth-1);
     Node n = grid.getNodes()[row][col];
-    
+        
     //Drawing lines
     if (lining) {
       if (prevNode != null) {
