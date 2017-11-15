@@ -52,7 +52,15 @@ public class Node implements Serializable {
   public ArrayList<Node> getIn() {
     return this.in;
   }
-
+  
+  public void setIn(ArrayList<Node> in) {
+    this.in = in;
+  }
+  
+  public void setOut(ArrayList<Node> out) {
+    this.out = out;
+  }
+  
   public boolean wipe() {
     boolean success;
     if(this.out.isEmpty() && this.in.isEmpty()){

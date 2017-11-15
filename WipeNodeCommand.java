@@ -2,11 +2,11 @@ import java.util.ArrayList;
 
 public class WipeNodeCommand implements Command {
 
-  Node node;
-  Grid grid;
-  ArrayList<Node> outgoing;
-  ArrayList<Node> incoming;
-  boolean highlighted;
+  private Node node;
+  private Grid grid;
+  private ArrayList<Node> outgoing;
+  private ArrayList<Node> incoming;
+  private boolean highlighted;
 
   public WipeNodeCommand(Node n, Grid g) {
     this.grid = g;
@@ -27,9 +27,8 @@ public class WipeNodeCommand implements Command {
     //System.out.println(this.node + " " + this.node.getOut() + " " + this.node.getIn());
     boolean success = grid.wipe(this.node);
     if (!success) {
-      System.out.println("Node wipe failed : No edges to wipe from node. Normal during mass wipe.");
+      System.out.println("Error : Nothing to wipe from node.");
     }
-
     return success;
   }
 
@@ -43,7 +42,8 @@ public class WipeNodeCommand implements Command {
     for (Node n : outgoing) {
       success = this.grid.connect(this.node, n);
       if (!success) {
-        System.out.println("Warning: Failed to reestablish connection. This is normal when undoing 'k' clearing.");
+        System.out.println("Error: Failed to reestablish connection.");
+        return success;
       }
     }
 
@@ -51,13 +51,11 @@ public class WipeNodeCommand implements Command {
     for (Node n : incoming) {
       success = this.grid.connect(n, this.node);
       if (!success) {
-        System.out.println("Warning: Failed to reestablish connection. This is normal when undoing 'k' clearing.");
+        System.out.println("Error: Failed to reestablish connection.");
+        return success;
       }
     }
 
-    //Because the wipe() functionnality is difficult to reverse when performed in batch, we expect SOME undos to fail when doing them in batch.
-    //This only occurs when attempting to connect already connected nodes and does not represent an actual problem with the data,
-    //only a redundancy in the operations being performed. In case other problems occur, log printing messages have been included.
-    return true;
+    return success;
   }
 }
