@@ -12,23 +12,28 @@ public class Grid implements Serializable {
   public int pWidth;
   public int pHeight;
 
+
   public int nodeWidth;
   public int nodeHeight;
-
+  public int maxNodeWidth;
+  public int maxNodeHeight;
   public int spacing;
 
   public transient PImage bg;
 
   private transient PApplet parent;
 
-  public Grid(int pHeight, int pWidth, int spacing, PApplet parent) {
+  public Grid(int pHeight, int pWidth, int spacing, int minSpacing, PApplet parent) {
 
     this.parent = parent;
     this.pHeight = pHeight;
     this.pWidth = pWidth;
     this.spacing = spacing;
-    this.nodeHeight = this.pHeight/this.spacing;
-    this.nodeWidth = this.pWidth/this.spacing;
+    this.maxNodeHeight = pHeight/minSpacing; 
+    this.maxNodeWidth = pWidth/minSpacing;
+    this.nodeHeight = pHeight/spacing;
+    this.nodeWidth = pWidth/spacing;
+
 
     this.createBg();
 
@@ -88,8 +93,10 @@ public class Grid implements Serializable {
 
   //draw node connections and highlights
   public void updateDrawing() {
-    for (int i = 0; i < this.nodes.length; i++) {
-      for (Node n : this.nodes[i]) {
+    Node n;
+    for (int i = 0; i < this.nodeHeight; i++) {
+      for (int j = 0; j < this.nodeWidth; j++) {
+        n = this.nodes[i][j];
         if (n.highlighted) {
           parent.ellipse(n.x, n.y, this.spacing/2, this.spacing/2);
         }
@@ -242,7 +249,7 @@ public class Grid implements Serializable {
     parent.println("new grid size: rows: " + this.nodeHeight + " cols: " + this.nodeWidth);
 
     this.createBg();
-    this.createNodes(this.nodes);
+    this.repositionNodes();
     return true;
   }
 
@@ -264,8 +271,8 @@ public class Grid implements Serializable {
     parent.println("new grid size: rows: " + this.nodeHeight + " cols: " + this.nodeWidth);
 
     this.createBg();
+    this.repositionNodes();
 
-    this.createNodes(this.nodes);
     return true;
   }
 
@@ -274,7 +281,7 @@ public class Grid implements Serializable {
     int maxJ = 0;
   outerloop:
     for (int i = this.nodeHeight-1; i > 0; i--) {
-      for (Node n : nodes[i]) {
+      for (Node n : this.nodes[i]) {
         if (!n.getOut().isEmpty() || !n.getIn().isEmpty() || n.highlighted) {
           maxI = i;
           break outerloop;
@@ -299,45 +306,25 @@ public class Grid implements Serializable {
   }
 
   private void createNodes() {
-    this.nodes = new Node[this.nodeHeight][this.nodeWidth];
-
-    //fill nodes array with fresh nodes
-    int row;
-    int col;
-    for (int i = 0; i < this.bg.pixels.length; i++) {
-      //get pixel coordinates in matrix form
-      row = i / this.pWidth;
-      col = i % this.pWidth; 
-      if ((row - (this.spacing/2)) % this.spacing == 0) {
-        if ((col  - (this.spacing/2))% this.spacing == 0) {
-          //filter out nodes that wouldnt have full spot
-          if (row < this.nodeHeight * this.spacing && col < this.nodeWidth * this.spacing) {
-            Node toAdd = new Node();
-            toAdd.reposition(col, row);
-            this.nodes[parent.constrain(row / this.spacing, 0, this.nodeHeight-1)][parent.constrain(col / this.spacing, 0, this.nodeWidth-1)] = toAdd;
-          }
-        }
+    this.nodes = new Node[this.maxNodeHeight][this.maxNodeWidth];
+    for (int i = 0; i < this.maxNodeHeight; i++) {
+      for (int j = 0; j < this.maxNodeWidth; j++) {
+        parent.println(i + " " + j);
+        Node toAdd = new Node();
+        toAdd.reposition(j*this.spacing + spacing/2, i*this.spacing + spacing/2);
+        this.nodes[i][j] = toAdd;
       }
     }
   }
 
-  private void createNodes(Node[][] old) {
-
-    Node[][] newNodes = new Node[this.nodeHeight][this.nodeWidth];
-
-    //fill nodes array with fresh nodes
+  //recomputes coordinates for all viewable nodes
+  //Assumes this.spacing, this.nodeHeight and this.nodeWidth will be set to new configuration
+  private void repositionNodes() {
     for (int i = 0; i < this.nodeHeight; i++) {
       for (int j = 0; j < this.nodeWidth; j++) {
-        if (i < old.length && j < old[0].length) {
-          newNodes[i][j] = old[i][j];
-          newNodes[i][j].reposition(j * spacing + spacing/2, i * spacing + spacing/2);
-        } else {
-          newNodes[i][j] = new Node();
-          newNodes[i][j].reposition(j * spacing + spacing/2, i * spacing + spacing/2);
-        }
+        this.nodes[i][j].reposition(j * this.spacing + this.spacing/2, i * this.spacing + this.spacing/2);
       }
     }
-    this.nodes = newNodes;
   }
 
   private void createBg() {

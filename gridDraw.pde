@@ -6,6 +6,7 @@ import java.io.*;
 
 //distance between dots on grid
 final int spacing = 32;
+final int minSpacing = 4;
 
 //Line drawing mode active?
 boolean lining = false;
@@ -25,7 +26,7 @@ Grid grid;
 Executer executer;
 
 void setup() {
-  size(700, 900);
+  size(1000, 900);
 
   //Create background img
   background(0);
@@ -33,7 +34,7 @@ void setup() {
   stroke(0, 153, 204);
 
   //send as bg image for grid
-  grid = new Grid(height, width, spacing, this);
+  grid = new Grid(height, width, spacing, minSpacing, this);
   executer = new Executer();
 
   //set ellipsmode for draw
