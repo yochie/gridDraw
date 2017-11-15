@@ -309,7 +309,6 @@ public class Grid implements Serializable {
     this.nodes = new Node[this.maxNodeHeight][this.maxNodeWidth];
     for (int i = 0; i < this.maxNodeHeight; i++) {
       for (int j = 0; j < this.maxNodeWidth; j++) {
-        parent.println(i + " " + j);
         Node toAdd = new Node();
         toAdd.reposition(j*this.spacing + spacing/2, i*this.spacing + spacing/2);
         this.nodes[i][j] = toAdd;
