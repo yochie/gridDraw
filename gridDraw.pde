@@ -37,7 +37,7 @@ void setup() {
   executer = new Executer();
 
   //set ellipsmode for draw
-  ellipseMode(CENTER);  // Set ellipseMode to CENTER
+  ellipseMode(CENTER);
 }
 
 void draw() {
@@ -54,7 +54,6 @@ void mousePressed() {
     //Drawing lines
     if (lining) {
       if (prevNode != null) {
-        //connect grid.getNodes()
         Command c = new ConnectCommand(prevNode, n, grid);
         executer.run(c);
       }
