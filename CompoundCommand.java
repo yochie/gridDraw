@@ -12,14 +12,11 @@ public abstract class CompoundCommand implements Command {
 
   public boolean execute() {
     this.results.clear();
-    boolean success = true;
     for (Command c : this.commands) {
       results.add(c.execute());
     }
-    
-    //System.out.println(results);
 
-    //Return success if at least one of the commands was successful
+    //Return true if at least one of the commands was successful
     for (boolean result : results) {
       if (result) {
         return true;
@@ -28,16 +25,16 @@ public abstract class CompoundCommand implements Command {
     return false;
   }
 
-    public boolean undo() {
-      boolean success = true;
-      for (int i = this.commands.size() - 1; i >= 0; i--) {
-        if (results.get(i)) {
-          success = commands.get(i).undo();
-        }
-        if (!success) {
-          return success;
+  public boolean undo() {
+    for (int i = this.commands.size() - 1; i >= 0; i--) {   
+      //only undo command if it was successful in the first place
+      if (results.get(i)) {
+        //make sure undo operation is successful
+        if (!commands.get(i).undo()){
+          return false;
         }
       }
-      return success;
     }
+    return true;
   }
+}
