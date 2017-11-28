@@ -35,7 +35,6 @@ public class Grid implements Serializable {
   private transient PApplet parent;
 
   public Grid(int pHeight, int pWidth, int spacing, int minSpacing, int maxSpacing, PApplet parent) {
-
     this.parent = parent;
     this.pHeight = pHeight;
     this.pWidth = pWidth;
@@ -52,6 +51,7 @@ public class Grid implements Serializable {
     this.createNodes();
   }
 
+  //Giving up on full encapsulation here
   public Node[][] getNodes() {
     return this.nodes;
   }
@@ -75,8 +75,6 @@ public class Grid implements Serializable {
   public PImage getBg() {
     return this.bg;
   }
-
-
 
   //wipe all nodes
   public boolean wipe() {

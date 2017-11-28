@@ -34,6 +34,8 @@ void setup() {
 
   //send as bg image for grid
   grid = new Grid(height, width, spacing, minSpacing, maxSpacing, this);
+  
+  //Object from command design pattern that will be running commands
   executer = new Executer();
 
   //set ellipsmode for draw
@@ -164,16 +166,21 @@ void keyPressed() {
           FileInputStream fis = new FileInputStream(fname);
           ObjectInputStream ois = new ObjectInputStream(fis);     
           grid = (Grid) ois.readObject();
+          
+          //sets transient properties (parent and background)
           grid.attach(this);
+          
           ois.close();
           fis.close();
         }
       }
+      
+      //clear undo/redo history
       executer.reset();
     }
-    catch (Exception ex)
+    catch (Exception e)
     {
-      print("Error reading file: " + ex.toString());
+      print("Error reading file: " + e.toString());
     }
   }
 }
