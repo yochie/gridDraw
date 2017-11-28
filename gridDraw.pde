@@ -1,12 +1,11 @@
 import javax.swing.*;
-
 import javax.swing.filechooser.*;
-
 import java.io.*;
 
 //distance between dots on grid
 final int spacing = 32;
 final int minSpacing = 4;
+final int maxSpacing = 128;
 
 //Line drawing mode active?
 boolean lining = false;
@@ -34,7 +33,7 @@ void setup() {
   stroke(0, 153, 204);
 
   //send as bg image for grid
-  grid = new Grid(height, width, spacing, minSpacing, this);
+  grid = new Grid(height, width, spacing, minSpacing, maxSpacing, this);
   executer = new Executer();
 
   //set ellipsmode for draw

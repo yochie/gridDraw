@@ -6,34 +6,46 @@ import java.util.*;
 import processing.core.*;
 
 public class Grid implements Serializable {
+  
   //2D array of nodes
-  public Node nodes[][];
+  private Node nodes[][];
 
-  public int pWidth;
-  public int pHeight;
+  //window dimensions in pixels
+  private int pWidth;
+  private int pHeight;
 
+  //limits for distance between grid points  
+  private int maxSpacing;
+  private int minSpacing;
 
-  public int nodeWidth;
-  public int nodeHeight;
-  public int maxNodeWidth;
-  public int maxNodeHeight;
-  public int spacing;
+  //given pixel dimensions and spacing limits, computed node limits
+  private int maxNodeWidth;
+  private int maxNodeHeight;
 
-  public transient PImage bg;
+  //current node limits given zoom level
+  private int nodeWidth;
+  private int nodeHeight;
+
+  //current spacing between grid points
+  private int spacing;
+
+  //background image
+  private transient PImage bg;
 
   private transient PApplet parent;
 
-  public Grid(int pHeight, int pWidth, int spacing, int minSpacing, PApplet parent) {
+  public Grid(int pHeight, int pWidth, int spacing, int minSpacing, int maxSpacing, PApplet parent) {
 
     this.parent = parent;
     this.pHeight = pHeight;
     this.pWidth = pWidth;
     this.spacing = spacing;
+    this.maxSpacing = maxSpacing;
+    this.minSpacing = minSpacing;
     this.maxNodeHeight = pHeight/minSpacing; 
     this.maxNodeWidth = pWidth/minSpacing;
     this.nodeHeight = pHeight/spacing;
     this.nodeWidth = pWidth/spacing;
-
 
     this.createBg();
 
@@ -102,7 +114,8 @@ public class Grid implements Serializable {
         }
         if (!n.getOut().isEmpty()) {
           for (Node d : n.getOut()) {
-            parent.line(n.x, n.y, d.x, d.y);
+            if (d.x < this.pWidth && d.y < this.pHeight)
+              parent.line(n.x, n.y, d.x, d.y);
           }
         }
       }
@@ -226,15 +239,15 @@ public class Grid implements Serializable {
 
     int newSpacing;
     //if already at max spacing, skip
-    if (this.spacing >= 128) {
+    if (this.spacing >= this.maxSpacing) {
       parent.println("Maximum size reached.");
       return false;
     }
-    //otherwise augment spacing to a max of 128
-    else if (this.spacing <= 124)
-      newSpacing = this.spacing + 4 ;
+    //otherwise augment spacing to a max of this.maxSpacing
+    else if (this.spacing <= this.maxSpacing/2)
+      newSpacing = this.spacing*2;
     else {
-      newSpacing = 128;
+      newSpacing = this.maxSpacing;
     }
     //if current drawing doesn't fit in requested size
     int occupied[] = this.occupiedRange();
@@ -255,16 +268,16 @@ public class Grid implements Serializable {
 
   public boolean shrink() {    
     //if already at min spacing, skip
-    if (this.spacing <= 4) { 
+    if (this.spacing <= this.minSpacing) { 
       parent.println("Minimum size reached.");
       return false;
     }
 
     //otherwise reduce spacing to a min of 4
-    else if (this.spacing >= 8)
-      this.spacing = this.spacing - 4;
+    else if (this.spacing >= this.minSpacing*2)
+      this.spacing = this.spacing/2;
     else {
-      this.spacing = 4;
+      this.spacing = this.minSpacing;
     }
     this.nodeHeight = this.pHeight/this.spacing;
     this.nodeWidth = this.pWidth/this.spacing;
