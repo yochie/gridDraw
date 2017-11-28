@@ -41,14 +41,14 @@ void setup() {
 }
 
 void draw() {
-  background(grid.bg);
+  background(grid.getBg());
   grid.updateDrawing();
 }
 
 void mousePressed() {
   if (!pause) {
-    int row = constrain(mouseY/grid.spacing, 0, grid.nodeHeight-1);
-    int col = constrain(mouseX/grid.spacing, 0, grid.nodeWidth-1);
+    int row = constrain(mouseY/grid.getSpacing(), 0, grid.getNodeHeight() - 1);
+    int col = constrain(mouseX/grid.getSpacing(), 0, grid.getNodeWidth() - 1);
     Node n = grid.getNodes()[row][col];
         
     //Drawing lines
@@ -67,7 +67,7 @@ void mousePressed() {
     }
     //Highlighting
     else {
-      if (grid.nodes[row][col].highlighted) {
+      if (grid.getNodes()[row][col].highlighted) {
         Command c = new HighlightCommand(row, col, false, grid);
         executer.run(c);
       } else {

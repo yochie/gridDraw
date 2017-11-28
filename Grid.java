@@ -60,6 +60,24 @@ public class Grid implements Serializable {
     this.nodes = nodes;
   }
 
+  public int getSpacing() {
+    return this.spacing;
+  }
+
+  public int getNodeHeight() {
+    return this.nodeHeight;
+  }
+
+  public int getNodeWidth() {
+    return this.nodeWidth;
+  }
+
+  public PImage getBg() {
+    return this.bg;
+  }
+
+
+
   //wipe all nodes
   public boolean wipe() {
     for (int i = 0; i < this.nodes.length; i++) {
