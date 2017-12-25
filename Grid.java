@@ -341,11 +341,13 @@ public class Grid implements Serializable {
 
   private void createNodes() {
     this.nodes = new Node[this.maxNodeHeight][this.maxNodeWidth];
-    for (int i = 0; i < this.maxNodeHeight; i++) {
-      for (int j = 0; j < this.maxNodeWidth; j++) {
-        Node toAdd = new Node();
-        toAdd.reposition(j*this.spacing + spacing/2, i*this.spacing + spacing/2);
-        this.nodes[i][j] = toAdd;
+    for (int row = 0; row < this.maxNodeHeight; row++) {
+      for (int col = 0; col < this.maxNodeWidth; col++) {
+        Node toAdd = new Node(row, col);
+        int newX = col * this.spacing + this.spacing/2;
+        int newY = row * this.spacing + this.spacing/2;
+        toAdd.reposition(newX, newY);
+        this.nodes[row][col] = toAdd;
       }
     }
   }
@@ -355,7 +357,9 @@ public class Grid implements Serializable {
   private void repositionNodes() {
     for (int i = 0; i < this.nodeHeight; i++) {
       for (int j = 0; j < this.nodeWidth; j++) {
-        this.nodes[i][j].reposition(j * this.spacing + this.spacing/2, i * this.spacing + this.spacing/2);
+        int newX = j * this.spacing + this.spacing/2;
+        int newY = i * this.spacing + this.spacing/2;
+        this.nodes[i][j].reposition(newX, newY);
       }
     }
   }

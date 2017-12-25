@@ -60,23 +60,24 @@ void mousePressed() {
     //Drawing lines
     if (lining) {
       if (prevNode != null) {
-        Command c = new ConnectCommand(prevNode, n, grid);
+        Command c = new ConnectCommand(prevNode, selectedNode, grid);
         executer.run(c);
       }
-      prevNode = n;
+      prevNode = selectedNode;
     }
+
     //Clearing node
     else if (mouseButton == RIGHT) {
-      Command c = new WipeNodeCommand(n, grid);
+      Command c = new WipeNodeCommand(selectedNode, grid);
       executer.run(c);
     }
     //Highlighting
     else {
-      if (grid.getNodes()[row][col].highlighted) {
-        Command c = new HighlightCommand(row, col, false, grid);
+      if (selectedNode.isHighlighted()) {
+        Command c = new HighlightCommand(selectedNode, false, grid);
         executer.run(c);
       } else {
-        Command c = new HighlightCommand(row, col, true, grid);
+        Command c = new HighlightCommand(selectedNode, true, grid);
         executer.run(c);
       }
     }
