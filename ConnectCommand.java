@@ -11,12 +11,12 @@ public class ConnectCommand implements Command {
   }
 
   public boolean execute() {
-    boolean success = this.grid.connect(this.out, this.in);
+    boolean success = this.grid.connect(this.out.getRow(), this.out.getCol(),this.in.getRow(), this.in.getCol());
     return success;
   }
 
   public boolean undo() {
-    boolean success = this.grid.disconnect(this.out, this.in);
+    boolean success = this.grid.disconnect(this.out.getRow(), this.out.getCol(),this.in.getRow(), this.in.getCol());
     return success;
   }
 }

@@ -144,7 +144,10 @@ public class Grid implements Serializable {
   }
 
   //connect nodes
-  public boolean connect(Node from, Node to) {
+  public boolean connect(int outRow, int outCol, int inRow, int inCol) {
+    Node from = this.nodes[outRow][outCol]; 
+    Node to = this.nodes[inRow][inCol];
+    
     boolean success;
     System.out.println("Connecting : " + from + " to " + to);
     if (from != to) {
@@ -173,7 +176,10 @@ public class Grid implements Serializable {
   }
 
   //disconnect nodes (only if right edge direction)
-  public boolean disconnect(Node from, Node to) {
+  public boolean disconnect(int outRow, int outCol, int inRow, int inCol) {
+    Node from = this.nodes[outRow][outCol]; 
+    Node to = this.nodes[inRow][inCol];
+    
     boolean success;
 
     if (from != to) {

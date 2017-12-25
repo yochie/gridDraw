@@ -40,7 +40,7 @@ public class WipeNodeCommand implements Command {
 
     //reset out
     for (Node n : outgoing) {
-      success = this.grid.connect(this.node, n);
+      success = this.grid.connect(this.node.getRow(),this.node.getCol(), n.getRow(), n.getCol());
       if (!success) {
         System.out.println("Error: Failed to reestablish connection.");
         return success;
@@ -49,7 +49,7 @@ public class WipeNodeCommand implements Command {
 
     //vreset in
     for (Node n : incoming) {
-      success = this.grid.connect(n, this.node);
+      success = this.grid.connect(n.getRow(), n.getCol(), this.node.getRow(),this.node.getCol());
       if (!success) {
         System.out.println("Error: Failed to reestablish connection.");
         return success;
