@@ -12,12 +12,12 @@ public class HighlightCommand implements Command {
   }
 
   public boolean execute() {
-    boolean success = this.grid.highlight(n, val);
+    boolean success = this.grid.highlight(n.getRow(), n.getCol(), val);
     return success;
   }
 
   public boolean undo() {
-    boolean success = this.grid.highlight(n, !val);    
+    boolean success = this.grid.highlight(n.getRow(), n.getCol(), !val);    
     return success;
   }
 }
