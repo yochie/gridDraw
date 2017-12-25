@@ -86,7 +86,7 @@ public class Grid implements Serializable {
     for (int i = 0; i < this.nodes.length; i++) {
       for (Node n : this.nodes[i]) {
         n.wipe();
-        n.highlighted = false;
+        n.highlight(false);
       }
     }
     return true;
