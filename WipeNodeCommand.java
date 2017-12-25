@@ -11,7 +11,7 @@ public class WipeNodeCommand implements Command {
   public WipeNodeCommand(Node n, Grid g) {
     this.grid = g;
     this.node = n;
-    this.highlighted = n.highlighted;
+    this.highlighted = n.isHighlighted();
     this.outgoing = new ArrayList<Node>();
     this.incoming = new ArrayList<Node>();
 

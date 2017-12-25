@@ -11,7 +11,7 @@ public class WipeSingleNodeCommand implements Command {
 
   public WipeSingleNodeCommand(Node n) {
     this.node = n;
-    this.highlighted = n.highlighted;
+    this.highlighted = n.isHighlighted();
     this.outgoing = new ArrayList<Node>();
     this.incoming = new ArrayList<Node>();
 

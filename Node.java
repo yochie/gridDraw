@@ -63,21 +63,29 @@ public class Node implements Serializable {
   
   public boolean wipe() {
     boolean success;
+    
     if(this.out.isEmpty() && this.in.isEmpty()){
       success = false;
       return success;
     }
+    
     for (Node n : this.out) {
       n.getIn().remove(this);
     }
+    
     this.out.clear();
+    
     for (Node n : this.in) {
       n.getOut().remove(this);
     }
+    
     this.in.clear();
     
-    //System.out.println("cleared node " + this.x + " " + this.y);
     success = true;
     return success;
+  }
+  
+  public boolean isHighlighted(){
+    return this.highlighted;
   }
 }

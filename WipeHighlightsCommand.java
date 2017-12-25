@@ -9,7 +9,7 @@ public class WipeHighlightsCommand implements Command {
     this.highlighted = new ArrayList<Node>();
     for (int i = 0; i < grid.getNodes().length; i++) {
       for (Node n : grid.getNodes()[i]) {
-        if (n.highlighted) {
+        if (n.isHighlighted()) {
           highlighted.add(n);
         }
       }

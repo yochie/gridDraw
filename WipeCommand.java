@@ -9,7 +9,7 @@ public class WipeCommand extends CompoundCommand {
     this.commands = new ArrayList<Command>();
     for (int i = 0; i < this.grid.getNodes().length; i++) {
       for (Node n : this.grid.getNodes()[i]) {
-        if ((!n.getOut().isEmpty()) || ( !n.getIn().isEmpty()) || n.highlighted) {
+        if ((!n.getOut().isEmpty()) || ( !n.getIn().isEmpty()) || n.isHighlighted()) {
           this.commands.add(new WipeSingleNodeCommand(n));
         }
       }

@@ -114,7 +114,7 @@ public class Grid implements Serializable {
     boolean success = false;
     for (int i = 0; i < nodes.length; i++) {
       for (Node n : nodes[i]) {
-        if (n.highlighted) {
+        if (n.isHighlighted()) {
           success = true;
           n.highlight(false);
         }
@@ -130,7 +130,7 @@ public class Grid implements Serializable {
     for (int i = 0; i < this.nodeHeight; i++) {
       for (int j = 0; j < this.nodeWidth; j++) {
         n = this.nodes[i][j];
-        if (n.highlighted) {
+        if (n.isHighlighted()) {
           parent.ellipse(n.x, n.y, this.spacing/2, this.spacing/2);
         }
         if (!n.getOut().isEmpty()) {
@@ -316,7 +316,7 @@ public class Grid implements Serializable {
   outerloop:
     for (int i = this.nodeHeight-1; i > 0; i--) {
       for (Node n : this.nodes[i]) {
-        if (!n.getOut().isEmpty() || !n.getIn().isEmpty() || n.highlighted) {
+        if (!n.getOut().isEmpty() || !n.getIn().isEmpty() || n.isHighlighted()) {
           maxI = i;
           break outerloop;
         }
@@ -328,7 +328,7 @@ public class Grid implements Serializable {
     for (int j = this.nodeWidth-1; j > 0; j--) {
       for (int i = 0; i < this.nodeHeight; i++) {
         Node n = nodes[i][j];
-        if (!n.getOut().isEmpty() || !n.getIn().isEmpty() || n.highlighted) {
+        if (!n.getOut().isEmpty() || !n.getIn().isEmpty() || n.isHighlighted()) {
           maxJ = j;
           break outerloop2;
         }
