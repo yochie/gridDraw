@@ -4,28 +4,24 @@ import java.util.*;
 public class Node implements Serializable {
   private ArrayList<Node> out;
   private ArrayList<Node> in;
-  public boolean visited;
+  
+  //pixel coordinates in screen
   public int x;
   public int y;
-  public boolean highlighted;
+  
+  //node coordinates in grid
+  private int row;
+  private int col;
+  
+  private boolean highlighted;
 
   //constructor
-  public Node(int i, int w) {
+  public Node(int row, int col) {
     this.in = new ArrayList<Node>();
     this.out = new ArrayList<Node>();
-    this.visited = false;
     this.highlighted = false;
-
-    this.y = i / w; //row is y...
-    this.x = i % w; //column is x...
-  }
-
-  //constructor
-  public Node() {
-    this.in = new ArrayList<Node>();
-    this.out = new ArrayList<Node>();
-    this.visited = false;
-    this.highlighted = false;
+    this.row = row;
+    this.col = col;
   }
 
   public boolean highlight(boolean val) {
@@ -43,6 +39,14 @@ public class Node implements Serializable {
   public void reposition(int x, int y) {
     this.x = x;
     this.y = y;
+  }
+  
+  public int getRow(){
+    return this.row;
+  }  
+  
+  public int getCol(){
+    return this.col;
   }
 
   public ArrayList<Node> getOut() {
