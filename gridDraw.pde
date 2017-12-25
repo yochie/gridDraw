@@ -55,8 +55,8 @@ void mousePressed() {
   if (!pause) {
     int row = constrain(mouseY/grid.getSpacing(), 0, grid.getNodeHeight() - 1);
     int col = constrain(mouseX/grid.getSpacing(), 0, grid.getNodeWidth() - 1);
-    Node n = grid.getNodes()[row][col];
-        
+    Node selectedNode = grid.getNode(row, col);
+
     //Drawing lines
     if (lining) {
       if (prevNode != null) {

@@ -60,6 +60,11 @@ public class Grid implements Serializable {
     this.nodes = nodes;
   }
 
+  //TODO: Consider cloning nodes before returning them to preserve encapsulation
+  public Node getNode(int row, int col) {
+    return this.nodes[row][col];
+  }
+
   public int getSpacing() {
     return this.spacing;
   }
