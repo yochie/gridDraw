@@ -1,25 +1,23 @@
 public class HighlightCommand implements Command {
 
-  private int i, j;
+  private Node n;
   private boolean val;
   private Grid grid;
 
 
-  public HighlightCommand(int i, int j, boolean val, Grid g) {
+  public HighlightCommand(Node n, boolean val, Grid g) {
     this.grid = g;
-    this.i = i;
-    this.j = j;
+    this.n = n;
     this.val = val;
   }
 
   public boolean execute() {
-    boolean success = this.grid.highlight(i, j, val);
+    boolean success = this.grid.highlight(n, val);
     return success;
   }
 
   public boolean undo() {
-    boolean success = this.grid.highlight(i, j, !val);
-    
+    boolean success = this.grid.highlight(n, !val);    
     return success;
   }
 }

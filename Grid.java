@@ -102,9 +102,9 @@ public class Grid implements Serializable {
   }
 
   //switch highlight mode of a specific node
-  public boolean highlight (int row, int col, boolean val) {
-    boolean success = nodes[row][col].highlight(val);
-    System.out.println("row:" + row + " col:" + col + " " + val);
+  public boolean highlight (Node n, boolean val) {
+    boolean success = n.highlight(val);
+    System.out.println("row:" + n.getRow() + " col:" + n.getCol() + " " + val);
 
     return success;
   }
