@@ -27,7 +27,7 @@ public class WipeSingleNodeCommand implements Command {
   public boolean execute() {
     boolean result;
     //if there is anything to do with node
-    if (!this.node.getOut().isEmpty() || !this.node.getOut().isEmpty() || this.node.highlighted) {
+    if (!this.node.getIn().isEmpty() || !this.node.getOut().isEmpty() || this.node.isHighlighted()) {
       this.node.getOut().clear();
       this.node.getIn().clear();
       this.node.highlight(false);
