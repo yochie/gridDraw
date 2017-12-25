@@ -6,8 +6,6 @@ import java.util.*;
 import processing.core.*;
 
 public class Grid implements Serializable {
-  
-  //2D array of nodes
   private Node nodes[][];
 
   //window dimensions in pixels
@@ -51,11 +49,13 @@ public class Grid implements Serializable {
     this.createNodes();
   }
 
-  //Giving up on full encapsulation here
+  //TODO: Consider cloning nodes before returning them to preserve encapsulation
   public Node[][] getNodes() {
     return this.nodes;
   }
 
+  //TODO: Consider removing this function and using smaller, more controlled functions
+  //to modify grid
   public void setNodes(Node[][] nodes) {
     this.nodes = nodes;
   }
